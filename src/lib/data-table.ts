@@ -1,20 +1,23 @@
+// 导入类型定义
 import type { ColumnType, Filter, FilterOperator } from "@/types"
+// 导入TanStack Table的Column类型
 import { type Column } from "@tanstack/react-table"
 
+// 导入数据表配置
 import { dataTableConfig } from "@/config/data-table"
 
 /**
- * Generate common pinning styles for a table column.
+ * 生成表格列的固定样式
  *
- * This function calculates and returns CSS properties for pinned columns in a data table.
- * It handles both left and right pinning, applying appropriate styles for positioning,
- * shadows, and z-index. The function also considers whether the column is the last left-pinned
- * or first right-pinned column to apply specific shadow effects.
+ * 该函数计算并返回数据表中固定列的CSS属性。
+ * 它处理左右固定列，应用适当的定位、阴影和z-index样式。
+ * 该函数还会考虑列是否是最后一个左固定列或第一个右固定列，
+ * 以应用特定的阴影效果。
  *
- * @param options - The options for generating pinning styles.
- * @param options.column - The column object for which to generate styles.
- * @param options.withBorder - Whether to show a box shadow between pinned and scrollable columns.
- * @returns A React.CSSProperties object containing the calculated styles.
+ * @param options - 生成固定样式的选项
+ * @param options.column - 要生成样式的列对象
+ * @param options.withBorder - 是否在固定列和可滚动列之间显示阴影
+ * @returns 包含计算样式的React.CSSProperties对象
  */
 export function getCommonPinningStyles<TData>({
   column,
@@ -22,104 +25,112 @@ export function getCommonPinningStyles<TData>({
 }: {
   column: Column<TData>
   /**
-   * Show box shadow between pinned and scrollable columns.
+   * 是否在固定列和可滚动列之间显示阴影
    * @default false
    */
   withBorder?: boolean
 }): React.CSSProperties {
+  // 判断列是否固定
   const isPinned = column.getIsPinned()
+  // 判断是否是最后一个左固定列
   const isLastLeftPinnedColumn =
     isPinned === "left" && column.getIsLastColumn("left")
+  // 判断是否是第一个右固定列
   const isFirstRightPinnedColumn =
     isPinned === "right" && column.getIsFirstColumn("right")
 
+  // 返回样式对象
   return {
     boxShadow: withBorder
       ? isLastLeftPinnedColumn
-        ? "-4px 0 4px -4px hsl(var(--border)) inset"
+        ? "-4px 0 4px -4px hsl(var(--border)) inset" // 最后一个左固定列的阴影
         : isFirstRightPinnedColumn
-          ? "4px 0 4px -4px hsl(var(--border)) inset"
+          ? "4px 0 4px -4px hsl(var(--border)) inset" // 第一个右固定列的阴影
           : undefined
       : undefined,
-    left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
-    right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
-    opacity: isPinned ? 0.97 : 1,
-    position: isPinned ? "sticky" : "relative",
-    background: isPinned ? "hsl(var(--background))" : "hsl(var(--background))",
-    width: column.getSize(),
-    zIndex: isPinned ? 1 : 0,
+    left: isPinned === "left" ? `${column.getStart("left")}px` : undefined, // 左固定位置
+    right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined, // 右固定位置
+    opacity: isPinned ? 0.97 : 1, // 固定列透明度
+    position: isPinned ? "sticky" : "relative", // 定位方式
+    background: isPinned ? "hsl(var(--background))" : "hsl(var(--background))", // 背景色
+    width: column.getSize(), // 列宽
+    zIndex: isPinned ? 1 : 0, // 层级
   }
 }
 
 /**
- * Determine the default filter operator for a given column type.
+ * 根据列类型获取默认的过滤操作符
  *
- * This function returns the most appropriate default filter operator based on the
- * column's data type. For text columns, it returns 'iLike' (case-insensitive like),
- * while for all other types, it returns 'eq' (equality).
+ * 该函数根据列的数据类型返回最合适的默认过滤操作符。
+ * 对于文本列，返回'iLike'（不区分大小写的like），
+ * 对于其他类型，返回'eq'（等于）。
  *
- * @param columnType - The type of the column (e.g., 'text', 'number', 'date', etc.).
- * @returns The default FilterOperator for the given column type.
+ * @param columnType - 列的类型（如'text'、'number'、'date'等）
+ * @returns 给定列类型的默认FilterOperator
  */
 export function getDefaultFilterOperator(
   columnType: ColumnType
 ): FilterOperator {
+  // 文本列使用iLike操作符
   if (columnType === "text") {
     return "iLike"
   }
 
+  // 其他列使用eq操作符
   return "eq"
 }
 
 /**
- * Retrieve the list of applicable filter operators for a given column type.
+ * 获取给定列类型的适用过滤操作符列表
  *
- * This function returns an array of filter operators that are relevant and applicable
- * to the specified column type. It uses a predefined mapping of column types to
- * operator lists, falling back to text operators if an unknown column type is provided.
+ * 该函数返回与指定列类型相关且适用的过滤操作符数组。
+ * 它使用预定义的列类型到操作符列表的映射，
+ * 如果提供了未知的列类型，则回退到文本操作符。
  *
- * @param columnType - The type of the column for which to get filter operators.
- * @returns An array of objects, each containing a label and value for a filter operator.
+ * @param columnType - 要获取过滤操作符的列类型
+ * @returns 包含过滤操作符标签和值的对象数组
  */
 export function getFilterOperators(columnType: ColumnType) {
+  // 操作符映射表
   const operatorMap: Record<
     ColumnType,
     { label: string; value: FilterOperator }[]
   > = {
-    text: dataTableConfig.textOperators,
-    number: dataTableConfig.numericOperators,
-    select: dataTableConfig.selectOperators,
-    "multi-select": dataTableConfig.selectOperators,
-    boolean: dataTableConfig.booleanOperators,
-    date: dataTableConfig.dateOperators,
+    text: dataTableConfig.textOperators, // 文本操作符
+    number: dataTableConfig.numericOperators, // 数字操作符
+    select: dataTableConfig.selectOperators, // 选择操作符
+    "multi-select": dataTableConfig.selectOperators, // 多选操作符
+    boolean: dataTableConfig.booleanOperators, // 布尔操作符
+    date: dataTableConfig.dateOperators, // 日期操作符
   }
 
+  // 返回对应列类型的操作符，默认返回文本操作符
   return operatorMap[columnType] ?? dataTableConfig.textOperators
 }
 
 /**
- * Filters out invalid or empty filters from an array of filters.
+ * 过滤掉无效或空的过滤器
  *
- * This function processes an array of filters and returns a new array
- * containing only the valid filters. A filter is considered valid if:
- * - It has an 'isEmpty' or 'isNotEmpty' operator, or
- * - Its value is not empty (for array values, at least one element must be present;
- *   for other types, the value must not be an empty string, null, or undefined)
+ * 该函数处理过滤器数组并返回一个新数组，
+ * 仅包含有效的过滤器。一个过滤器被认为是有效的条件是：
+ * - 它有'isEmpty'或'isNotEmpty'操作符，或
+ * - 它的值不为空（对于数组值，至少有一个元素；
+ *   对于其他类型，值不能是空字符串、null或undefined）
  *
- * @param filters - An array of Filter objects to be validated.
- * @returns A new array containing only the valid filters.
+ * @param filters - 要验证的Filter对象数组
+ * @returns 仅包含有效过滤器的新数组
  */
 export function getValidFilters<TData>(
   filters: Filter<TData>[]
 ): Filter<TData>[] {
   return filters.filter(
     (filter) =>
-      filter.operator === "isEmpty" ||
-      filter.operator === "isNotEmpty" ||
+      filter.operator === "isEmpty" || // 空值操作符
+      filter.operator === "isNotEmpty" || // 非空值操作符
       (Array.isArray(filter.value)
-        ? filter.value.length > 0
-        : filter.value !== "" &&
-          filter.value !== null &&
-          filter.value !== undefined)
+        ? filter.value.length > 0 // 数组值至少有一个元素
+        : filter.value !== "" && // 非空字符串
+          filter.value !== null && // 非null
+          filter.value !== undefined) // 非undefined
   )
 }

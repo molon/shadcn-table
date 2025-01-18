@@ -1,31 +1,45 @@
 "use client"
 
+// 标记为客户端组件
+
+// 导入React核心库
 import * as React from "react"
+// 导入nuqs库用于管理URL查询参数状态
 import { useQueryState } from "nuqs"
 
+// 导入数据表配置和类型
 import { dataTableConfig, type DataTableConfig } from "@/config/data-table"
+// 导入工具函数cn用于合并class名称
 import { cn } from "@/lib/utils"
+// 导入ToggleGroup组件
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+// 导入Tooltip组件
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
+// 定义特性标志值的类型
 type FeatureFlagValue = DataTableConfig["featureFlags"][number]["value"]
 
+// 定义特性标志上下文接口
 interface FeatureFlagsContextProps {
-  featureFlags: FeatureFlagValue[]
-  setFeatureFlags: (value: FeatureFlagValue[]) => void
+  featureFlags: FeatureFlagValue[] // 当前启用的特性标志
+  setFeatureFlags: (value: FeatureFlagValue[]) => void // 设置特性标志的方法
 }
 
+// 创建特性标志上下文
 const FeatureFlagsContext = React.createContext<FeatureFlagsContextProps>({
-  featureFlags: [],
-  setFeatureFlags: () => {},
+  featureFlags: [], // 默认特性标志为空数组
+  setFeatureFlags: () => {}, // 默认设置方法为空函数
 })
 
+// 定义useFeatureFlags hook
 export function useFeatureFlags() {
+  // 获取上下文
   const context = React.useContext(FeatureFlagsContext)
+  // 如果上下文不存在则抛出错误
   if (!context) {
     throw new Error(
       "useFeatureFlags must be used within a FeatureFlagsProvider"
@@ -34,66 +48,85 @@ export function useFeatureFlags() {
   return context
 }
 
+// 定义特性标志提供者组件的props接口
 interface FeatureFlagsProviderProps {
-  children: React.ReactNode
+  children: React.ReactNode // 子组件
 }
 
+// 特性标志提供者组件
 export function FeatureFlagsProvider({ children }: FeatureFlagsProviderProps) {
+  // 使用useQueryState管理URL中的特性标志状态
   const [featureFlags, setFeatureFlags] = useQueryState<FeatureFlagValue[]>(
-    "flags",
+    "flags", // 查询参数名称
     {
-      defaultValue: [],
-      parse: (value) => value.split(",") as FeatureFlagValue[],
-      serialize: (value) => value.join(","),
-      eq: (a, b) =>
+      defaultValue: [], // 默认值
+      parse: (value) => value.split(",") as FeatureFlagValue[], // 解析URL参数
+      serialize: (value) => value.join(","), // 序列化参数值
+      eq: (
+        a,
+        b // 比较函数
+      ) =>
         a.length === b.length && a.every((value, index) => value === b[index]),
-      clearOnDefault: true,
-      shallow: false,
+      clearOnDefault: true, // 默认值时清除参数
+      shallow: false, // 深度比较
     }
   )
 
   return (
+    // 提供特性标志上下文
     <FeatureFlagsContext.Provider
       value={{
-        featureFlags,
-        setFeatureFlags: (value) => void setFeatureFlags(value),
+        featureFlags, // 当前特性标志
+        setFeatureFlags: (value) => void setFeatureFlags(value), // 设置特性标志的方法
       }}
     >
+      {/* 特性标志切换器容器 */}
       <div className="w-full overflow-x-auto">
+        {/* 多选切换组 */}
         <ToggleGroup
-          type="multiple"
-          variant="outline"
-          size="sm"
-          value={featureFlags}
-          onValueChange={(value: FeatureFlagValue[]) => setFeatureFlags(value)}
-          className="w-fit gap-0"
+          type="multiple" // 多选模式
+          variant="outline" // 轮廓样式
+          size="sm" // 小尺寸
+          value={featureFlags} // 当前选中的值
+          onValueChange={(value: FeatureFlagValue[]) => setFeatureFlags(value)} // 值改变回调
+          className="w-fit gap-0" // 自定义样式
         >
+          {/* 遍历所有特性标志 */}
           {dataTableConfig.featureFlags.map((flag, index) => (
             <Tooltip key={flag.value}>
+              {" "}
+              {/* 工具提示 */}
+              {/* 切换项 */}
               <ToggleGroupItem
-                value={flag.value}
+                value={flag.value} // 当前项的值
                 className={cn(
                   "gap-2 whitespace-nowrap rounded-none px-3 text-xs data-[state=on]:bg-accent/70 data-[state=on]:hover:bg-accent/90",
                   {
-                    "rounded-l-sm border-r-0": index === 0,
+                    "rounded-l-sm border-r-0": index === 0, // 第一个项的特殊样式
                     "rounded-r-sm":
-                      index === dataTableConfig.featureFlags.length - 1,
+                      index === dataTableConfig.featureFlags.length - 1, // 最后一个项的特殊样式
                   }
                 )}
                 asChild
               >
+                {/* 工具提示触发器 */}
                 <TooltipTrigger>
+                  {/* 图标 */}
                   <flag.icon className="size-3.5 shrink-0" aria-hidden="true" />
+                  {/* 标签 */}
                   {flag.label}
                 </TooltipTrigger>
               </ToggleGroupItem>
+              {/* 工具提示内容 */}
               <TooltipContent
-                align="start"
-                side="bottom"
-                sideOffset={6}
+                align="start" // 对齐方式
+                side="bottom" // 显示位置
+                sideOffset={6} // 偏移量
                 className="flex max-w-60 flex-col space-y-1.5 border bg-background py-2 font-semibold text-foreground"
               >
+                {/* 工具提示标题 */}
                 <div>{flag.tooltipTitle}</div>
+                {/* 工具提示描述 */}
                 <div className="text-xs text-muted-foreground">
                   {flag.tooltipDescription}
                 </div>
@@ -102,6 +135,7 @@ export function FeatureFlagsProvider({ children }: FeatureFlagsProviderProps) {
           ))}
         </ToggleGroup>
       </div>
+      {/* 渲染子组件 */}
       {children}
     </FeatureFlagsContext.Provider>
   )
