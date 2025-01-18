@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:17.0
+    restart: always
+    environment:
+      POSTGRES_USER: shadcn
+      POSTGRES_PASSWORD: shadcn
+      POSTGRES_DB: shadcn
+    ports:
+      - "9191:5432"
