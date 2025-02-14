@@ -1,56 +1,45 @@
-"use client"
+"use client";
 
-// 标记为客户端组件
+import { useQueryState } from "nuqs";
+import * as React from "react";
 
-// 导入React核心库
-import * as React from "react"
-// 导入nuqs库用于管理URL查询参数状态
-import { useQueryState } from "nuqs"
-
-// 导入数据表配置和类型
-import { dataTableConfig, type DataTableConfig } from "@/config/data-table"
-// 导入工具函数cn用于合并class名称
-import { cn } from "@/lib/utils"
-// 导入ToggleGroup组件
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-// 导入Tooltip组件
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
+import { type DataTableConfig, dataTableConfig } from "@/config/data-table";
+import { cn } from "@/lib/utils";
 
-// 定义特性标志值的类型
-type FeatureFlagValue = DataTableConfig["featureFlags"][number]["value"]
+type FeatureFlagValue = DataTableConfig["featureFlags"][number]["value"];
 
 // 定义特性标志上下文接口
 interface FeatureFlagsContextProps {
-  featureFlags: FeatureFlagValue[] // 当前启用的特性标志
-  setFeatureFlags: (value: FeatureFlagValue[]) => void // 设置特性标志的方法
+  featureFlags: FeatureFlagValue[];
+  setFeatureFlags: (value: FeatureFlagValue[]) => void;
 }
 
 // 创建特性标志上下文
 const FeatureFlagsContext = React.createContext<FeatureFlagsContextProps>({
-  featureFlags: [], // 默认特性标志为空数组
-  setFeatureFlags: () => {}, // 默认设置方法为空函数
-})
+  featureFlags: [],
+  setFeatureFlags: () => {},
+});
 
 // 定义useFeatureFlags hook
 export function useFeatureFlags() {
-  // 获取上下文
-  const context = React.useContext(FeatureFlagsContext)
-  // 如果上下文不存在则抛出错误
+  const context = React.useContext(FeatureFlagsContext);
   if (!context) {
     throw new Error(
       "useFeatureFlags must be used within a FeatureFlagsProvider"
-    )
+    );
   }
-  return context
+  return context;
 }
 
 // 定义特性标志提供者组件的props接口
 interface FeatureFlagsProviderProps {
-  children: React.ReactNode // 子组件
+  children: React.ReactNode;
 }
 
 // 特性标志提供者组件
@@ -67,10 +56,10 @@ export function FeatureFlagsProvider({ children }: FeatureFlagsProviderProps) {
         b // 比较函数
       ) =>
         a.length === b.length && a.every((value, index) => value === b[index]),
-      clearOnDefault: true, // 默认值时清除参数
-      shallow: false, // 深度比较
+      clearOnDefault: true,
+      shallow: false,
     }
-  )
+  );
 
   return (
     // 提供特性标志上下文
@@ -104,7 +93,7 @@ export function FeatureFlagsProvider({ children }: FeatureFlagsProviderProps) {
                   {
                     "rounded-l-sm border-r-0": index === 0, // 第一个项的特殊样式
                     "rounded-r-sm":
-                      index === dataTableConfig.featureFlags.length - 1, // 最后一个项的特殊样式
+                      index === dataTableConfig.featureFlags.length - 1,
                   }
                 )}
                 asChild
@@ -126,8 +115,7 @@ export function FeatureFlagsProvider({ children }: FeatureFlagsProviderProps) {
               >
                 {/* 工具提示标题 */}
                 <div>{flag.tooltipTitle}</div>
-                {/* 工具提示描述 */}
-                <div className="text-xs text-muted-foreground">
+                <div className="text-muted-foreground text-xs">
                   {flag.tooltipDescription}
                 </div>
               </TooltipContent>
@@ -138,5 +126,5 @@ export function FeatureFlagsProvider({ children }: FeatureFlagsProviderProps) {
       {/* 渲染子组件 */}
       {children}
     </FeatureFlagsContext.Provider>
-  )
+  );
 }

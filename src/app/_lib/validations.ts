@@ -1,24 +1,20 @@
-// 导入数据库schema定义和Task类型
-import { tasks, type Task } from "@/db/schema"
-// 导入nuqs/server的搜索参数处理工具
+import { type Task, tasks } from "@/db/schema";
 import {
   createSearchParamsCache,
   parseAsArrayOf,
   parseAsInteger,
   parseAsString,
   parseAsStringEnum,
-} from "nuqs/server"
-// 导入zod用于数据验证
-import * as z from "zod"
+} from "nuqs/server";
+import * as z from "zod";
 
-// 导入自定义的过滤器和排序解析器
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers"
+import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
 
 // 创建搜索参数缓存配置
 export const searchParamsCache = createSearchParamsCache({
   // 功能标志，支持"advancedTable"和"floatingBar"两种值
   flags: parseAsArrayOf(z.enum(["advancedTable", "floatingBar"])).withDefault(
-    []
+    [],
   ),
   // 当前页码，默认为1
   page: parseAsInteger.withDefault(1),
@@ -42,7 +38,7 @@ export const searchParamsCache = createSearchParamsCache({
   filters: getFiltersStateParser().withDefault([]),
   // 过滤条件连接符，支持"and"和"or"
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-})
+});
 
 // 创建任务时的数据验证schema
 export const createTaskSchema = z.object({
@@ -54,7 +50,7 @@ export const createTaskSchema = z.object({
   status: z.enum(tasks.status.enumValues),
   // 任务优先级，从数据库枚举值中选择
   priority: z.enum(tasks.priority.enumValues),
-})
+});
 
 // 更新任务时的数据验证schema
 export const updateTaskSchema = z.object({
@@ -66,9 +62,10 @@ export const updateTaskSchema = z.object({
   status: z.enum(tasks.status.enumValues).optional(),
   // 任务优先级，可选
   priority: z.enum(tasks.priority.enumValues).optional(),
-})
+});
 
-// 导出类型定义
-export type GetTasksSchema = Awaited<ReturnType<typeof searchParamsCache.parse>>
-export type CreateTaskSchema = z.infer<typeof createTaskSchema>
-export type UpdateTaskSchema = z.infer<typeof updateTaskSchema>
+export type GetTasksSchema = Awaited<
+  ReturnType<typeof searchParamsCache.parse>
+>;
+export type CreateTaskSchema = z.infer<typeof createTaskSchema>;
+export type UpdateTaskSchema = z.infer<typeof updateTaskSchema>;

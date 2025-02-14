@@ -1,24 +1,15 @@
-// 导入站点配置
-import { siteConfig } from "@/config/site"
-// 导入工具函数cn用于合并class名称
-import { cn } from "@/lib/utils"
-// 导入站点头部组件
-import { SiteHeader } from "@/components/layouts/site-header"
-// 导入主题提供者组件
-import { ThemeProvider } from "@/components/providers"
-// 导入Tailwind调试指示器组件
-import { TailwindIndicator } from "@/components/tailwind-indicator"
+import { SiteHeader } from "@/components/layouts/site-header";
+import { ThemeProvider } from "@/components/providers";
+import { TailwindIndicator } from "@/components/tailwind-indicator";
+import { siteConfig } from "@/config/site";
+import { cn } from "@/lib/utils";
 
-// 导入全局样式
-import "@/styles/globals.css"
+import "@/styles/globals.css";
 
-// 导入Next.js的Metadata和Viewport类型
-import type { Metadata, Viewport } from "next"
+import type { Metadata, Viewport } from "next";
 
-// 导入字体配置
-import { fontMono, fontSans } from "@/lib/fonts"
-// 导入Toast通知组件
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
+import { fontMono, fontSans } from "@/lib/fonts";
 
 // 定义页面元数据
 export const metadata: Metadata = {
@@ -89,7 +80,7 @@ export const metadata: Metadata = {
   },
   // PWA manifest文件路径
   manifest: `${siteConfig.url}/site.webmanifest`,
-}
+};
 
 // 定义页面视口配置
 export const viewport: Viewport = {
@@ -102,7 +93,7 @@ export const viewport: Viewport = {
     // 深色模式主题色
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
-}
+};
 
 // 根布局组件
 export default function RootLayout({ children }: React.PropsWithChildren) {
@@ -149,5 +140,5 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
         <Toaster />
       </body>
     </html>
-  )
+  );
 }

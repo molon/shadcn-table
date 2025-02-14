@@ -22,7 +22,7 @@ export const sortingItemSchema = z.object({
  * @returns 返回排序状态解析器
  */
 export const getSortingStateParser = <TData>(
-  originalRow?: Row<TData>["original"]
+  originalRow?: Row<TData>["original"],
 ) => {
   // 获取有效键集合
   const validKeys = originalRow ? new Set(Object.keys(originalRow)) : null
@@ -42,7 +42,7 @@ export const getSortingStateParser = <TData>(
 
         // 检查排序字段是否有效
         if (validKeys && result.data.some((item) => !validKeys.has(item.id))) {
-          return null
+          return null;
         }
 
         // 返回验证后的数据
@@ -59,10 +59,10 @@ export const getSortingStateParser = <TData>(
       a.length === b.length &&
       a.every(
         (item, index) =>
-          item.id === b[index]?.id && item.desc === b[index]?.desc
+          item.id === b[index]?.id && item.desc === b[index]?.desc,
       ),
-  })
-}
+  });
+};
 
 // 定义过滤器schema
 export const filterSchema = z.object({
@@ -97,7 +97,7 @@ export const getFiltersStateParser = <T>(originalRow?: Row<T>["original"]) => {
 
         // 检查过滤字段是否有效
         if (validKeys && result.data.some((item) => !validKeys.has(item.id))) {
-          return null
+          return null;
         }
 
         // 返回验证后的数据
@@ -117,7 +117,7 @@ export const getFiltersStateParser = <T>(originalRow?: Row<T>["original"]) => {
           filter.id === b[index]?.id &&
           filter.value === b[index]?.value &&
           filter.type === b[index]?.type &&
-          filter.operator === b[index]?.operator
+          filter.operator === b[index]?.operator,
       ),
-  })
-}
+  });
+};

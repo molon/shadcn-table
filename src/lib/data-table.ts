@@ -23,12 +23,12 @@ export function getCommonPinningStyles<TData>({
   column,
   withBorder = false,
 }: {
-  column: Column<TData>
+  column: Column<TData>;
   /**
    * 是否在固定列和可滚动列之间显示阴影
    * @default false
    */
-  withBorder?: boolean
+  withBorder?: boolean;
 }): React.CSSProperties {
   // 判断列是否固定
   const isPinned = column.getIsPinned()
@@ -37,7 +37,7 @@ export function getCommonPinningStyles<TData>({
     isPinned === "left" && column.getIsLastColumn("left")
   // 判断是否是第一个右固定列
   const isFirstRightPinnedColumn =
-    isPinned === "right" && column.getIsFirstColumn("right")
+    isPinned === "right" && column.getIsFirstColumn("right");
 
   // 返回样式对象
   return {
@@ -69,11 +69,11 @@ export function getCommonPinningStyles<TData>({
  * @returns 给定列类型的默认FilterOperator
  */
 export function getDefaultFilterOperator(
-  columnType: ColumnType
+  columnType: ColumnType,
 ): FilterOperator {
   // 文本列使用iLike操作符
   if (columnType === "text") {
-    return "iLike"
+    return "iLike";
   }
 
   // 其他列使用eq操作符
@@ -121,7 +121,7 @@ export function getFilterOperators(columnType: ColumnType) {
  * @returns 仅包含有效过滤器的新数组
  */
 export function getValidFilters<TData>(
-  filters: Filter<TData>[]
+  filters: Filter<TData>[],
 ): Filter<TData>[] {
   return filters.filter(
     (filter) =>

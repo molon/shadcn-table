@@ -1,33 +1,33 @@
-import * as React from "react"
-import { type SearchParams } from "@/types"
+import type { SearchParams } from "@/types";
+import * as React from "react";
 
-import { getValidFilters } from "@/lib/data-table"
-import { Skeleton } from "@/components/ui/skeleton"
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
-import { DateRangePicker } from "@/components/date-range-picker"
-import { Shell } from "@/components/shell"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
+import { DateRangePicker } from "@/components/date-range-picker";
+import { Shell } from "@/components/shell";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getValidFilters } from "@/lib/data-table";
 
-import { FeatureFlagsProvider } from "./_components/feature-flags-provider"
-import { TasksTable } from "./_components/tasks-table"
+import { FeatureFlagsProvider } from "./_components/feature-flags-provider";
+import { TasksTable } from "./_components/tasks-table";
 import {
   getTaskPriorityCounts,
-  getTasks,
   getTaskStatusCounts,
-} from "./_lib/queries"
-import { searchParamsCache } from "./_lib/validations"
+  getTasks,
+} from "./_lib/queries";
+import { searchParamsCache } from "./_lib/validations";
 
 interface IndexPageProps {
-  searchParams: Promise<SearchParams>
+  searchParams: Promise<SearchParams>;
 }
 
 export default async function IndexPage(props: IndexPageProps) {
   // 解析传入的搜索参数
-  const searchParams = await props.searchParams
+  const searchParams = await props.searchParams;
   // 使用验证器解析并验证搜索参数
-  const search = searchParamsCache.parse(searchParams)
+  const search = searchParamsCache.parse(searchParams);
 
   // 获取有效的过滤器参数
-  const validFilters = getValidFilters(search.filters)
+  const validFilters = getValidFilters(search.filters);
 
   // 并行获取任务数据、任务状态统计和任务优先级统计
   const promises = Promise.all([
@@ -37,7 +37,7 @@ export default async function IndexPage(props: IndexPageProps) {
     }),
     getTaskStatusCounts(), // 获取任务状态统计
     getTaskPriorityCounts(), // 获取任务优先级统计
-  ])
+  ]);
 
   // 返回页面布局
   return (
@@ -70,5 +70,5 @@ export default async function IndexPage(props: IndexPageProps) {
         </React.Suspense>
       </FeatureFlagsProvider>
     </Shell>
-  )
+  );
 }

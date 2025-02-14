@@ -1,7 +1,7 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import { type VariantProps, cva } from "class-variance-authority";
+import type * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 // 使用cva（class-variance-authority）定义Shell组件的样式变体
 // cva是一个用于管理CSS类变体的工具，主要功能：
@@ -47,7 +47,7 @@ const shellVariants = cva(
       variant: "default", // 默认使用default变体
     },
   }
-)
+);
 
 // Shell组件属性接口
 interface ShellProps
@@ -66,7 +66,7 @@ interface ShellProps
   // 5. 示例用法：
   //    - <Shell as="main"> 渲染为main元素
   //    - <Shell as={CustomComponent}> 渲染为自定义组件
-  as?: React.ElementType
+  as?: React.ElementType;
 }
 
 // Shell组件实现
@@ -103,8 +103,8 @@ function Shell({
   return (
     // 动态渲染组件，合并样式变体和自定义className
     <Comp className={cn(shellVariants({ variant }), className)} {...props} />
-  )
+  );
 }
 
 // 导出Shell组件和样式变体
-export { Shell, shellVariants }
+export { Shell, shellVariants };
